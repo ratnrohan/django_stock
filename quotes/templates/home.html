@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>This is Stock Market Portflio Webapp</h1>
+</br> 
+</br>
+
+
+{% if ticker %}
+	{{ ticker }}
+{% endif %}
+
+
+{% if api %}
+	{% if api == "ERROR..." %}
+		There was a Problem with the ticker symbol
+
+	{% else %}
+		
+
+		<h1> {{ api.companyName}}</h1><br/>
+		Price: ${{ api.latestPrice }}<br/>
+		Previous Close: {{ api.previousClose }}<br/>
+		Market Cap: ${{ api.marketCap }}<br/>
+		YTD Change: ${{ api.ytdChange }}<br/>
+		52WK High: ${{ api.week52High }}<br/>
+		52WK Low: ${{ api.week52Low }}<br/>
+
+
+
+	{% endif %}
+
+{% endif %}
+
+
+	
+
+{% endblock %}
