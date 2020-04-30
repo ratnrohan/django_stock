@@ -1,3 +1,7 @@
+# Copyrights (c) 2020-2021 Ratn Rohan ALL Rights Reserved
+
+
+
 from django.shortcuts import render , redirect
 from .models import Stock
 from .forms import StockForm
