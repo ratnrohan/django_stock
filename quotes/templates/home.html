@@ -1,15 +1,54 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>This is Stock Market Portflio Webapp</h1>
+<h1>Personalised Stock Market Portflio Webapp</h1>
 </br> 
-</br>
+
 
 
 {% if ticker %}
 	{{ ticker }}
 {% endif %}
 
+{% if apiabout %}
+	
+	{% if api == "ERROR..." %}
+		There was a Problem with the ticker symbol
+
+	{% else %}
+		
+
+		<h1> {{ apiabout.companyName}}</h1> <h2> {{ apiabout.symbol}}</h2><br/>
+		
+	{% endif %}
+
+{% endif %} 
+
+
+<table class="table table-hover">
+ 	<tbody>
+    <tr>
+      <th scope="row">Exchange</th>
+      <td>{{ apiabout.exchange }}</td>
+      
+    </tr>
+    <tr>
+      <th scope="row">Website</th>
+      <td>{{ apiabout.website }}</td>
+    </tr>
+    <tr>
+      <th scope="row">CEO</th>
+      <td >{{ apiabout.CEO }}</td>
+     </tr>
+     
+     <tr>
+      	<td colspan="2" >{{ apiabout.description }}</td>
+     </tr>
+
+  </tbody>
+</table>
+
+<br/><br/>
 
 {% if api %}
 	{% if api == "ERROR..." %}
@@ -17,22 +56,117 @@
 
 	{% else %}
 		
+		<table class="table table-hover">
+ 	<tbody>
+    <tr>
+      <th scope="row">Price Today</th>
+      <td>${{ api.latestPrice }}</td>
+      
+    </tr>
+    <tr>
+      <th scope="row">Previous Close</th>
+      <td>${{ api.previousClose }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Market Cap</th>
+      <td > ${{ api.marketCap }}</td>
+     </tr>
+     
+    <tr>
+      <th scope="row">YTD Change</th>
+      <td > {{ api.ytdChange }}%</td>
+     </tr>
 
-		<h1> {{ api.companyName}}</h1><br/>
-		Price: ${{ api.latestPrice }}<br/>
-		Previous Close: {{ api.previousClose }}<br/>
-		Market Cap: ${{ api.marketCap }}<br/>
-		YTD Change: ${{ api.ytdChange }}<br/>
-		52WK High: ${{ api.week52High }}<br/>
-		52WK Low: ${{ api.week52Low }}<br/>
+     <tr>
+      <th scope="row">52WK High</th>
+      <td >${{ api.week52High }}</td>
+     </tr>
 
+     <tr>
+      <th scope="row">52WK Low</th>
+      <td > ${{ api.week52Low }}</td>
+     </tr>
+
+
+  </tbody>
+</table>
 
 
 	{% endif %}
 
 {% endif %}
 
+<!--
+{% for i in apichart %}
+		
+	{{ i.date }} &nbsp;&nbsp; - &nbsp;&nbsp;&nbsp;{{ i.open }}</br>
+		
+{% endfor %} -->
 
-	
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
+</head>
+
+<body>
+<canvas id="line-chart" width="400" height="200"></canvas>
+<script>
+
+var xlabel = [];
+{% for i in apichart %}
+xlabel.push("{{ i.date }}"); 
+{% endfor %}
+//console.log (xlabel);
+
+var y1label = [];
+{% for i in apichart %}
+y1label.push("{{ i.close }}"); 
+{% endfor %}
+//console.log (ylabel);
+
+var y2label = [];
+{% for i in apichart %}
+y2label.push("{{ i.open }}"); 
+{% endfor %}
+
+
+new Chart(document.getElementById("line-chart"), {
+  type: 'line',
+  data: {
+    labels: xlabel,
+    datasets: [{ 
+        data: y2label,
+        label: "Opening Price",
+        borderColor: "#3e95cd",
+        fill: false
+      }, { 
+        data: y1label,
+        label: "Closing Price",
+        borderColor: "#8e5ea2",
+        fill: false
+      }
+    ]
+  },
+  options: {
+    scales: {
+    	yAxes:[{
+    		scaleLabel:{
+    			display: true,
+    			labelString: 'Stock Price'
+    		}
+    	}]
+    },
+    title: {
+      display: true,
+      text: 'Stock Data'
+    }
+  }
+});
+
+</script>
+</body>		
+
 
 {% endblock %}

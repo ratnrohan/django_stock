@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+
+
+<h1>Stock Chart</h1>
+
+
+</br></br>
+
+<form action= "{% url 'chart' %}" class="form-inline my-2 my-lg-0" method = "POST">
+	{% csrf_token %}
+	<input class="form-control mr-sm-2" type="search" placeholder="Get Stock chart" aria-label="Search" name="ticker" id="ticker">
+
+	<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Stock chart</button>
+</form>
+
+</br>
+
+{% if ticker %}
+	{{ ticker }}
+{% endif %}
+
+
+<!--{% if apichart %}
+	{% if apichart == "ERROR..." %}
+		There was a Problem with the ticker symbol
+
+	{% else %}
+		{% for i in apichart %}
+
+		{{ i.date }}&nbsp;&nbsp;&nbsp; -&nbsp;&nbsp;&nbsp;&nbsp; {{ i.close }}</br>
+
+		{% endfor %}
+		
+		
+	{% endif %}
+
+{% endif %}
+-->
+
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
+</head>
+
+<body>
+
+<!-- <canvas id="myChart" width="400" height="150"></canvas> -->
+
+<canvas id="line-chart" width="400" height="200"></canvas>
+<script>
+
+// var ctx = document.getElementById('myChart').getContext('2d');
+//const xlabel = "{{ apichart|safe }}";
+
+
+var xlabel = [];
+{% for i in apichart %}
+xlabel.push("{{ i.date }}"); 
+{% endfor %}
+//console.log (xlabel);
+
+var y1label = [];
+{% for i in apichart %}
+y1label.push("{{ i.close }}"); 
+{% endfor %}
+//console.log (ylabel);
+
+var y2label = [];
+{% for i in apichart %}
+y2label.push("{{ i.open }}"); 
+{% endfor %}
+
+var y3label = [];
+{% for i in apichart %}
+y3label.push("{{ i.high }}"); 
+{% endfor %}
+
+var y4label = [];
+{% for i in apichart %}
+y4label.push("{{ i.low }}"); 
+{% endfor %}
+
+
+//var label = document.getElementById('ticker').value;
+
+
+/*
+var m
+yChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: xlabel,
+        datasets: [{
+            label: 'Closing Value',
+            data: ylabel,
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+}); 
+*/
+
+new Chart(document.getElementById("line-chart"), {
+  type: 'line',
+  data: {
+    labels: xlabel,
+    datasets: [{ 
+        data: y2label,
+        label: "Opening Price",
+        borderColor: "#3e95cd",
+        fill: false
+      }, { 
+        data: y1label,
+        label: "Closing Price",
+        borderColor: "#8e5ea2",
+        fill: false
+      }, { 
+        data: y3label,
+        label: "Highest Price",
+        borderColor: "#3cba9f",
+        fill: false
+      }, { 
+        data: y4label,
+        label: "Lowest Price",
+        borderColor: "#e8c3b9",
+        fill: false
+      }, 
+    ]
+  },
+  options:  {
+    scales: {
+    	yAxes:[{
+    		scaleLabel:{
+    			display: true,
+    			labelString: 'Stock Price'
+    		}
+    	}]
+    },
+    	xAxes:[{
+    		scaleLabel:{
+    			display: true,
+    			labelString: 'Timeline'
+    		}
+    	}],  
+    title: {
+      display: true,
+      text: 'Stock Data'
+    }
+  }
+});
+
+</script>
+</body>
+
+{% endblock %}

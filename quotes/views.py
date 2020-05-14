@@ -15,15 +15,55 @@ def home(request):
 	if request.method == 'POST':
 		ticker = request.POST['ticker'] 
 		api_request = requests.get("https://cloud.iexapis.com/stable/stock/" + ticker + "/quote?token=pk_c23fed661aeb4310a9d82ecefb7b8893")
-
+		apichart_request = requests.get("https://cloud.iexapis.com/stable/stock/" + ticker + "/chart/1m?token=pk_c23fed661aeb4310a9d82ecefb7b8893")
+		apiabout_request = requests.get("https://cloud.iexapis.com/stable/stock/" + ticker + "/company?token=pk_c23fed661aeb4310a9d82ecefb7b8893")	
 		try:
 			api = json.loads(api_request.content)
 		except Exception as e:
 			api = "ERROR..."
-		return render(request, 'home.html', {'api': api})
+		
+		try:
+			apichart = json.loads(apichart_request.content)
+		except Exception as e:
+			apichart = "ERROR..." 
+
+		try:
+			apiabout = json.loads(apiabout_request.content)
+		except Exception as e:
+			apiabout = "ERROR..." 
+
+		return render(request, 'home.html', {'api': api , 'apichart' : apichart , 'apiabout' : apiabout })
+
+
+
 
 	else:
 		return render(request, 'home.html', {'ticker': "Enter a ticker Symbol"})
+
+
+	
+
+
+def chart(request):
+	import requests
+	import json
+
+	if request.method == 'POST':
+		ticker = request.POST['ticker'] 
+		apichart_request = requests.get("https://cloud.iexapis.com/stable/stock/" + ticker + "/chart/1m?token=pk_c23fed661aeb4310a9d82ecefb7b8893")
+
+		try:
+			apichart = json.loads(apichart_request.content)
+		except Exception as e:
+			apichart = "ERROR..." 
+		#print(type(apichart))
+		#for i in apichart:
+		#	print(i['date'])
+		#print(apichart['close'])
+		return render(request, 'chart.html', {'apichart': apichart })
+
+	else:
+		return render(request, 'chart.html', {'ticker': "Enter a ticker Symbol"})
 
 
 
@@ -45,9 +85,10 @@ def add_stock(request):
 
 
 	else:
-		ticker = Stock.objects.all()
+		ticker = Stock.objects.all().distinct()
 		output = []
 		for ticker_item in ticker:
+			print (str(ticker_item))
 			api_request = requests.get("https://cloud.iexapis.com/stable/stock/" + str(ticker_item) + "/quote?token=pk_c23fed661aeb4310a9d82ecefb7b8893")
 
 			try:
@@ -55,7 +96,12 @@ def add_stock(request):
 				output.append(api)		
 			except Exception as e:
 				api = "ERROR..."
-
+			
+		for i in output:
+			print (i['ytdChange'])  
+		#	i['ytdChange'] = int(i['ytdChange']) 
+			i['ytdChange'] *= 100
+			i['ytdChange']=round(i['ytdChange'],2)
 
 		return render(request, 'add_stock.html', {'ticker' : ticker, 'output': output})
 
